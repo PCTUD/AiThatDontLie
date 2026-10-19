@@ -4,9 +4,15 @@ venv/
 __pycache__/
 *.pyc
 
+# IDE / OS cruft
+.idea/
+.vscode/
+.DS_Store
+
 # Built artifacts — regenerate with `python -m src.ingest`.
 data/index/
 
 # Keep the fetched corpus committed (small, makes the repo self-contained).
 # If you'd rather regenerate it, uncomment:
 # data/corpus/
+*.iml
