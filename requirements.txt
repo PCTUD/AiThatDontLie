@@ -1,0 +1,10 @@
+# Core RAG stack — pinned loosely; these majors are stable.
+anthropic>=0.40
+faiss-cpu>=1.8
+sentence-transformers>=3.0
+python-dotenv>=1.0
+
+# Demo UI
+streamlit>=1.38
+
+# ingest.py uses only the stdlib (urllib) to fetch Wikipedia — no extra dep.
