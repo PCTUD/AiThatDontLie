@@ -1,0 +1,22 @@
+{"id": 1, "question": "How does a tiebreak work in tennis?", "type": "answerable", "note": "Tiebreak article in corpus"}
+{"id": 2, "question": "How many Grand Slam singles titles has Roger Federer won?", "type": "answerable", "note": "Federer article in corpus"}
+{"id": 3, "question": "On what surface is the French Open played?", "type": "answerable", "note": "French Open + Clay court articles in corpus"}
+{"id": 4, "question": "What is the scoring system for a standard tennis game?", "type": "answerable", "note": "Tennis scoring system article in corpus"}
+{"id": 5, "question": "Which tournament is played on grass and considered the oldest Grand Slam?", "type": "answerable", "note": "Wimbledon article in corpus"}
+{"id": 6, "question": "How many Grand Slam titles has Serena Williams won?", "type": "answerable", "note": "Serena Williams article in corpus"}
+{"id": 7, "question": "What is a volley in tennis?", "type": "answerable", "note": "Volley article in corpus"}
+{"id": 8, "question": "Which city hosts the Australian Open?", "type": "answerable", "note": "Australian Open article in corpus"}
+{"id": 9, "question": "What is the standard length and width of a tennis court?", "type": "answerable", "note": "Tennis court article in corpus"}
+{"id": 10, "question": "Who is Billie Jean King and what is she known for in tennis?", "type": "answerable", "note": "Billie Jean King article in corpus"}
+{"id": 11, "question": "What materials are tennis balls made of?", "type": "answerable", "note": "Tennis ball article in corpus"}
+{"id": 12, "question": "How many Grand Slam titles has Rafael Nadal won on clay?", "type": "answerable", "note": "Nadal article in corpus; French Open clay angle"}
+{"id": 13, "question": "What is a serve fault in tennis?", "type": "answerable", "note": "Serve article in corpus"}
+{"id": 14, "question": "What is the Fed Cup and which organization runs it?", "type": "answerable", "note": "Fed Cup article in corpus"}
+{"id": 15, "question": "How many Grand Slam titles did Steffi Graf win in her career?", "type": "unanswerable", "note": "Steffi Graf article was NOT fetched (rate-limited); in-topic but out-of-corpus"}
+{"id": 16, "question": "How many Grand Slam titles did Pete Sampras win?", "type": "unanswerable", "note": "Pete Sampras article NOT in corpus"}
+{"id": 17, "question": "What year was the ATP Tour founded?", "type": "unanswerable", "note": "ATP Tour article NOT in corpus"}
+{"id": 18, "question": "Who holds the record for most Davis Cup titles by a single country?", "type": "unanswerable", "note": "Davis Cup article NOT in corpus"}
+{"id": 19, "question": "What is the capital of France?", "type": "unanswerable", "note": "Adversarial near-miss: 'France' overlaps French Open article; answer not in corpus"}
+{"id": 20, "question": "Who won the 2024 Wimbledon men's singles?", "type": "unanswerable", "note": "Adversarial near-miss: Wimbledon article in corpus but 2024 results not in Wikipedia snapshot; tests knowledge cutoff"}
+{"id": 21, "question": "What is the boiling point of water?", "type": "unanswerable", "note": "Completely off-domain; should be caught by retrieval gate"}
+{"id": 22, "question": "Who invented the iPhone?", "type": "unanswerable", "note": "Off-domain; should be caught by retrieval gate"}
