@@ -23,7 +23,7 @@ AiThatDontLie/
 └── src/
     ├── ingest.py        # fetch Wikipedia → chunk → embed → FAISS index
     ├── retriever.py     # load index; search(query, k) → [{text, source, score}]
-    ├── llm.py           # ONE place the Claude API is called: generate(), support_check()
+    ├── llm.py           # ONE LLM touch-point: generate(), support_check() — Ollama or Anthropic
     ├── uncertainty.py   # the three signals as pure functions
     ├── router.py        # decision loop: basic_rag() vs abstaining_rag()
     └── evaluate.py      # run both pipelines over eval.jsonl, print comparison table
@@ -31,12 +31,26 @@ AiThatDontLie/
 
 ## Setup from scratch
 
+### Using Ollama (free, no API key)
+
 ```bash
 python -m venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-cp .env.example .env               # then add your ANTHROPIC_API_KEY
+ollama pull gemma3:4b              # one-time download (~3GB); needs Ollama installed
 python -m src.ingest               # build data/index/ (takes ~60s first time)
+python -m src.llm                  # smoke test — should print "OK"
+streamlit run app.py
+```
+
+`LLM_BACKEND = "ollama"` is already the default in `config.py`. No `.env` needed.
+
+### Using Anthropic Claude API instead
+
+```bash
+cp .env.example .env               # add your ANTHROPIC_API_KEY
+# in config.py: set LLM_BACKEND = "anthropic"
+python -m src.llm                  # smoke test
 streamlit run app.py
 ```
 
@@ -85,26 +99,31 @@ SIGNAL 3 (if ENABLE_SELF_CONSISTENCY):
 
 | Knob | Default | Effect |
 |------|---------|--------|
+| `LLM_BACKEND` | `"ollama"` | `"ollama"` = local free model; `"anthropic"` = Claude API (needs key) |
+| `OLLAMA_MODEL` | `"gemma3:4b"` | Ollama model tag — must match what you've pulled |
+| `OLLAMA_BASE_URL` | `"http://localhost:11434/v1"` | Ollama server address |
+| `LLM_MODEL` | `"claude-haiku-4-5"` | Anthropic model — only used when `LLM_BACKEND = "anthropic"` |
 | `TAU_RETRIEVE` | 0.30 | Lower → answer more, abstain less on ambiguous queries |
 | `TAU_CONSISTENCY` | 0.75 | Lower → let more divergent answers through |
 | `TREAT_PARTIAL_AS_UNSUPPORTED` | False | True → stricter; partially supported answers trigger SEARCH_AGAIN |
 | `ENABLE_SELF_CONSISTENCY` | True | False → skip signal 3 (faster, cheaper) |
 | `TOP_K` / `TOP_K_RETRY` | 5 / 8 | More passages = more context but slower and noisier |
-| `LLM_MODEL` | `claude-haiku-4-5` | Swap to any Claude model ID — one-line change |
 
-## Claude API usage
+## LLM backend (`src/llm.py`)
 
-All API calls live in `src/llm.py`. The project uses:
+All LLM calls live here. The project uses two backends dispatched by `LLM_BACKEND`:
 
-- **`messages.create()` with `output_config.format` (JSON schema)** for structured
-  output — both `generate()` and `support_check()` return validated JSON, never
-  raw prose to parse.
-- **Lazy client singleton** — `_get_client()` is only called when a function is
-  first invoked, so importing `llm` is free and signal-1-only paths never need a key.
-- **`claude-haiku-4-5`** — cheapest Claude model; fine for grounded QA and
-  classifier-style checks. The model string is in `config.LLM_MODEL`.
+**Ollama path** — `openai.OpenAI` pointed at `localhost:11434/v1` (Ollama's
+OpenAI-compatible endpoint). Uses `response_format={"type": "json_object"}` for JSON
+output, plus explicit JSON format instructions in the system prompt. A `_safe_parse()`
+helper gracefully handles any field-presence failures since Ollama doesn't enforce schemas.
 
-To swap model or add a new LLM function, edit only `src/llm.py`.
+**Anthropic path** — `anthropic.Anthropic` with `output_config.format` (JSON schema
+enforcement, server-side). Unchanged from the original implementation.
+
+Both paths expose identical public functions — `generate()`, `support_check()`,
+`smoke_test()` — so `router.py` and `uncertainty.py` need zero changes when you
+switch backends. The lazy client singleton means signal-1-only paths never start Ollama.
 
 ## Adding a new signal
 
@@ -120,9 +139,11 @@ To swap model or add a new LLM function, edit only `src/llm.py`.
 python -m src.evaluate
 ```
 
-Requires `ANTHROPIC_API_KEY`. Runs both pipelines over all 22 eval questions and
-prints a comparison table — the key metric is **FP (unsupported answers)**: how
-many unanswerable questions the pipeline answered anyway.
+With `LLM_BACKEND = "ollama"`, no API key needed — runs fully locally. With
+`LLM_BACKEND = "anthropic"`, requires `ANTHROPIC_API_KEY` in `.env`. Runs both
+pipelines over all 22 eval questions and prints a comparison table — the key
+metric is **FP (unsupported answers)**: how many unanswerable questions the
+pipeline answered anyway.
 
 ## Extending the corpus
 

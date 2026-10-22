@@ -55,7 +55,16 @@ ENABLE_SELF_CONSISTENCY = True
 # ─────────────────────────────────────────────────────────────────────────────
 # LLM
 # ─────────────────────────────────────────────────────────────────────────────
-# Haiku: cheapest Claude model, fine for grounded QA + classifier-style checks.
+# Backend switch: "ollama" runs locally for free; "anthropic" requires an API key.
+# Flip this one string to swap the entire LLM layer — nothing else needs changing.
+LLM_BACKEND = "ollama"
+
+# Ollama — local server, OpenAI-compatible endpoint.
+# Run `ollama pull gemma3:4b` once, then `ollama serve` (or the desktop app).
+OLLAMA_BASE_URL = "http://localhost:11434/v1"
+OLLAMA_MODEL    = "gemma3:4b"
+
+# Anthropic — only used when LLM_BACKEND = "anthropic". Requires ANTHROPIC_API_KEY in .env.
 # Swap for a bigger model by changing this one string.
 LLM_MODEL = "claude-haiku-4-5"
 LLM_MAX_TOKENS = 1024
