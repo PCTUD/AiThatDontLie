@@ -51,6 +51,7 @@ def run_pipeline(name: str, fn, questions: list[dict]) -> list[dict]:
                 "answer": result.answer,
                 "top_score": result.signals.get("top_score"),
                 "support": result.signals.get("support"),
+                "consistency_sim": result.signals.get("consistency_sim"),
                 "elapsed": round(elapsed, 2),
                 "error": None,
             })
@@ -65,6 +66,7 @@ def run_pipeline(name: str, fn, questions: list[dict]) -> list[dict]:
                 "answer": "",
                 "top_score": None,
                 "support": None,
+                "consistency_sim": None,
                 "elapsed": round(elapsed, 2),
                 "error": str(exc),
             })
@@ -118,17 +120,19 @@ def _decision_str(decision: str) -> str:
 
 
 def print_detail_table(name: str, rows: list[dict]) -> None:
-    print(f"\n{'═' * 100}")
+    print(f"\n{'═' * 110}")
     print(f"  {name} — per-question results")
-    print(f"{'═' * 100}")
-    print(f"  {'ID':>2}  {'Type':>11}  {'Decision':>22}  {'Score':>5}  {'Support':>10}  Question")
-    print(f"  {'─'*2}  {'─'*11}  {'─'*22}  {'─'*5}  {'─'*10}  {'─'*50}")
+    print(f"{'═' * 110}")
+    print(f"  {'ID':>2}  {'Type':>11}  {'Decision':>22}  {'Score':>5}  {'Support':>10}  {'ConsSim':>7}  Question")
+    print(f"  {'─'*2}  {'─'*11}  {'─'*22}  {'─'*5}  {'─'*10}  {'─'*7}  {'─'*50}")
     for r in rows:
         score_s = f"{r['top_score']:.2f}" if r["top_score"] is not None else "  — "
         sup_s = r["support"] or "—"
+        sim = r.get("consistency_sim")
+        sim_s = f"{sim:.2f}" if sim is not None else "  —  "
         decision_s = _decision_str(r["decision"])
         q = r["question"][:55] + ("…" if len(r["question"]) > 55 else "")
-        print(f"  {r['id']:>2}  {r['type']:>11}  {decision_s:>22}  {score_s:>5}  {sup_s:>10}  {q}")
+        print(f"  {r['id']:>2}  {r['type']:>11}  {decision_s:>22}  {score_s:>5}  {sup_s:>10}  {sim_s:>7}  {q}")
 
 
 def print_summary_table(basic_m: dict, abstain_m: dict) -> None:

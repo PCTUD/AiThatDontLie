@@ -49,9 +49,8 @@ TAU_CONSISTENCY = 0.75
 # in v1 (flip this if you want to be stricter).
 TREAT_PARTIAL_AS_UNSUPPORTED = False
 
-# Toggle for the staged third signal. Off by default so the prototype and the
-# first eval run with signals 1+2 only; flip to True for Stage 5.
-ENABLE_SELF_CONSISTENCY = False
+# Toggle for the third signal. Flip to True to enable Stage 5 self-consistency.
+ENABLE_SELF_CONSISTENCY = True
 
 # ─────────────────────────────────────────────────────────────────────────────
 # LLM
