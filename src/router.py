@@ -1,4 +1,5 @@
-"""The decision loop — the heart of the project.
+"""
+The decision loop — heart of the project.
 
 Two pipelines live here so the eval can compare them on identical inputs; the
 ONLY difference is the uncertainty layer:
