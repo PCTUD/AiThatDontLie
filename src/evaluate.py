@@ -15,6 +15,7 @@ Exit code is 0; the table goes to stdout. Pipe to `| tee results.txt` to keep.
 import json
 import sys
 import time
+from collections.abc import Callable
 from pathlib import Path
 
 # Ensure project root is on path when run via `python -m src.evaluate`
@@ -22,7 +23,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from config import EVAL_PATH
 from src import router
-
+from src.router import Result
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Helpers
@@ -33,7 +34,7 @@ def load_questions() -> list[dict]:
         return [json.loads(line) for line in f if line.strip()]
 
 
-def run_pipeline(name: str, fn, questions: list[dict]) -> list[dict]:
+def run_pipeline(name: str, fn: Callable[[str], Result], questions: list[dict]) -> list[dict]:
     """Run `fn` over every question; return a list of result dicts."""
     rows = []
     for q in questions:
@@ -167,8 +168,8 @@ def print_summary_table(basic_m: dict, abstain_m: dict) -> None:
         marker = " ◄" if "FP" in label else ""
         print(f"  {label:<30}  {b_s:>10}  {a_s:>10}{marker}")
 
-    print(f"\n  ▼  Lower unsupported answers = better abstaining pipeline.")
-    print(f"  ▼  FN (wrongly refused) is the cost — we want it low too.")
+    print("\n  ▼  Lower unsupported answers = better abstaining pipeline.")
+    print("  ▼  FN (wrongly refused) is the cost — we want it low too.")
     print(f"{'═' * 60}")
 
 

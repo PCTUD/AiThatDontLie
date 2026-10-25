@@ -17,6 +17,7 @@ import sys
 import time
 import urllib.parse
 import urllib.request
+from typing import Any
 
 import faiss
 import numpy as np
@@ -88,9 +89,9 @@ def fetch_article(title: str, max_retries: int = 4) -> str | None:
 
     pages = data.get("query", {}).get("pages", {})
     for page in pages.values():
-        text = page.get("extract")
-        if text and len(text) > 200:   # skip stubs / missing pages
-            return text
+        text: Any = page.get("extract")
+        if text and len(str(text)) > 200:
+            return str(text)
     return None
 
 

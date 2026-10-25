@@ -1,5 +1,7 @@
 # AiThatDontLie
 
+![CI](https://github.com/PCTUD/AiThatDontLie/actions/workflows/ci.yml/badge.svg)
+
 **A RAG chatbot that knows when to answer, search again, or refuse.**
 
 Most RAG systems hallucinate confidently when they don't know something. This project
@@ -22,6 +24,19 @@ streamlit run app.py
 
 For a plain-language walkthrough of the UI, see **[USAGE.md](USAGE.md)**.  
 For developer / contributor docs, see **[CLAUDE.md](CLAUDE.md)**.
+
+---
+
+## Testing & code quality
+
+```bash
+pip install pytest pytest-cov ruff mypy
+pytest            # 27 unit tests — fully mocked, no API key or Ollama needed
+ruff check .      # linter
+mypy src/ config.py  # type checker
+```
+
+CI runs tests on Python 3.11 and 3.12 on every push and PR via GitHub Actions.
 
 ---
 
@@ -196,22 +211,28 @@ All tunables live in `config.py`. The uncertainty thresholds are the interesting
 ```
 AiThatDontLie/
 ├── config.py           # every tunable in one place
-├── app.py              # Streamlit UI
+├── app.py              # Streamlit UI (side-by-side Basic vs Abstaining)
 ├── requirements.txt
+├── pyproject.toml      # pytest / ruff / mypy config
 ├── .env.example
 ├── CLAUDE.md           # developer guide
 ├── USAGE.md            # plain-language user guide
+├── .github/
+│   └── workflows/ci.yml  # CI: tests + lint + types on Python 3.11 & 3.12
 ├── data/
 │   ├── corpus/         # 24 tennis Wikipedia articles (committed)
 │   ├── index/          # FAISS index + chunk metadata (gitignored)
 │   └── eval.jsonl      # 22 labelled eval questions
-└── src/
-    ├── ingest.py       # fetch → chunk → embed → FAISS index
-    ├── retriever.py    # search(query, k) → [{text, source, score}]
-    ├── llm.py          # generate() + support_check() — Claude API
-    ├── uncertainty.py  # the three signals
-    ├── router.py       # basic_rag() + abstaining_rag()
-    └── evaluate.py     # comparison table over eval.jsonl
+├── src/
+│   ├── ingest.py       # fetch → chunk → embed → FAISS index
+│   ├── retriever.py    # search(query, k) → [{text, source, score}]
+│   ├── llm.py          # generate() + support_check() — Ollama or Claude API
+│   ├── uncertainty.py  # the three signals
+│   ├── router.py       # basic_rag() + abstaining_rag()
+│   └── evaluate.py     # comparison table over eval.jsonl
+└── tests/
+    ├── test_uncertainty.py  # unit tests for all three signals
+    └── test_router.py       # unit tests for both pipeline decision paths
 ```
 
 ---

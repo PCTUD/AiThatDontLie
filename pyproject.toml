@@ -1,0 +1,26 @@
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v --tb=short"
+
+[tool.mypy]
+python_version = "3.11"
+# Catch real bugs without requiring full annotations on every dict/list.
+disallow_untyped_defs = true
+warn_return_any = true
+warn_unused_ignores = true
+# These libraries ship no type stubs.
+[[tool.mypy.overrides]]
+module = [
+    "faiss",
+    "sentence_transformers",
+    "streamlit",
+]
+ignore_missing_imports = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+ignore = ["E501"]  # line length enforced by formatter, not linter

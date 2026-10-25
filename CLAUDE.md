@@ -42,7 +42,6 @@ python -m src.ingest               # build data/index/ (takes ~60s first time)
 python -m src.llm                  # smoke test — should print "OK"
 streamlit run app.py
 ```
-
 `LLM_BACKEND = "ollama"` is already the default in `config.py`. No `.env` needed.
 
 ### Using Anthropic Claude API instead
@@ -56,6 +55,21 @@ streamlit run app.py
 
 The corpus (`data/corpus/`) is already committed — you only need to re-run
 `python -m src.ingest` if you add articles or change `CHUNK_CHARS`.
+
+## Tests, linting, and type checking
+
+```bash
+pip install pytest pytest-cov ruff mypy   # dev deps (not in requirements.txt)
+pytest                                    # 27 unit tests, no API key needed
+ruff check .                              # linter
+mypy src/ config.py                       # type checker
+```
+
+Tests live in `tests/` and are fully mocked — no index, no Ollama, no API key
+required. Each signal and the router decision logic has dedicated test classes.
+
+CI runs all three on every push/PR via `.github/workflows/ci.yml` (Python 3.11
+and 3.12). Tool config lives in `pyproject.toml`.
 
 ## The three uncertainty signals
 

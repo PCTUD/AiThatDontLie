@@ -20,6 +20,7 @@ change in config.py.
 
 import json
 import os
+from typing import Any, cast
 
 from dotenv import load_dotenv
 
@@ -41,7 +42,7 @@ _anthropic_client = None
 _ollama_client = None
 
 
-def _get_client():
+def _get_client() -> Any:
     global _anthropic_client, _ollama_client
     if LLM_BACKEND == "anthropic":
         if _anthropic_client is None:
@@ -86,7 +87,7 @@ def _safe_parse(text: str, required: list[str], fallback: dict) -> dict:
     try:
         data = json.loads(text)
         if all(k in data for k in required):
-            return data
+            return cast(dict[str, Any], data)
     except (json.JSONDecodeError, TypeError):
         pass
     return fallback
@@ -242,7 +243,7 @@ def _support_check_anthropic(question: str, answer: str, hits: list[dict]) -> di
         },
     )
     text = next(b.text for b in resp.content if b.type == "text")
-    return json.loads(text)
+    return cast(dict[str, Any], json.loads(text))
 
 
 def _support_check_ollama(question: str, answer: str, hits: list[dict]) -> dict:
@@ -302,14 +303,14 @@ def smoke_test() -> str:
             max_tokens=32,
             messages=[{"role": "user", "content": "Reply with exactly: OK"}],
         )
-        return resp.choices[0].message.content.strip()
+        return str(resp.choices[0].message.content).strip()
     else:
         resp = client.messages.create(
             model=LLM_MODEL,
             max_tokens=32,
             messages=[{"role": "user", "content": "Reply with exactly: OK"}],
         )
-        return next(b.text for b in resp.content if b.type == "text").strip()
+        return str(next(b.text for b in resp.content if b.type == "text")).strip()
 
 
 if __name__ == "__main__":
